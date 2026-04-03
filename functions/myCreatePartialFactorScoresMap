@@ -1,0 +1,176 @@
+# ============================================================
+# Function: myCreatePartialFactorScoresMap
+# Purpose: Create graphical layers for partial factor scores,
+#          colored either by items or by blocks.
+# Notes:
+#   - Requires ggplot2, ggrepel, prettyGraphs, and grid
+# ============================================================
+
+myCreatePartialFactorScoresMap <- function(
+  factorScores,
+  partialFactorScores,
+  axis1 = 1,
+  axis2 = 2,
+  colors4Items = NULL,
+  colors4Blocks = NULL,
+  names4Partial = NULL,
+  alpha.lines = 0.5,
+  size.lines = 0.75,
+  type.lines = 1,
+  arrow.length = 0,
+  alpha.points = 0.7,
+  shape.points = 23,
+  size.points = 1,
+  alpha.labels = 0.7,
+  font.labels = "plain",
+  family.labels = "sans",
+  size.labels = 2
+) {
+  nI <- nrow(factorScores)
+
+  if (nI != dim(partialFactorScores)[[1]]) {
+    stop("incompatible number of rows between FS and PartialFS")
+  }
+
+  fS <- factorScores[, c(axis1, axis2)]
+  pFS <- partialFactorScores[, c(axis1, axis2), ]
+
+  if (is.null(arrow.length)) {
+    arrow.length <- 0
+  }
+
+  nK <- dim(pFS)[[3]]
+
+  if (is.null(dimnames(pFS)[[3]])) {
+    dimnames(pFS)[[3]] <- seq_len(nK)
+  }
+
+  if (is.null(names4Partial)) {
+    names4Partial <- dimnames(pFS)[[3]]
+  }
+
+  if (is.null(colors4Blocks)) {
+    colors4Blocks <- prettyGraphsColorSelection(nK)
+  }
+
+  if (is.null(colors4Items)) {
+    colors4Items <- prettyGraphsColorSelection(nI)
+  }
+
+  if (is.null(colnames(fS))) {
+    colnames(fS) <- paste0("Component ", c(axis1, axis2))
+  }
+
+  leGraph.lines.partial.i <- list()
+  leGraph.points.partial.i <- list()
+  leGraph.names.partial.i <- list()
+  leGraph.lines.partial.b <- list()
+  leGraph.points.partial.b <- list()
+  leGraph.names.partial.b <- list()
+
+  for (i in seq_len(nI)) {
+    pFSi <- as.data.frame(t(pFS[i, 1:2, ]))
+
+    zePoints <- ggplot2::geom_point(
+      data = pFSi,
+      color = colors4Items[i],
+      alpha = alpha.points,
+      shape = shape.points,
+      size = size.points
+    )
+
+    zeLabels <- ggrepel::geom_text_repel(
+      data = pFSi,
+      color = colors4Items[i],
+      label = names4Partial,
+      alpha = alpha.labels,
+      size = size.labels,
+      fontface = font.labels,
+      family = family.labels,
+      force = 3,
+      segment.size = 0,
+      max.overlaps = 50
+    )
+
+    zeLines <- suppressWarnings(
+      ggplot2::annotate(
+        "segment",
+        x = fS[i, 1],
+        y = fS[i, 2],
+        xend = pFS[i, 1, ],
+        yend = pFS[i, 2, ],
+        color = colors4Items[i],
+        alpha = alpha.lines,
+        size = size.lines,
+        linetype = type.lines,
+        arrow = grid::arrow(length = grid::unit(arrow.length, "cm"))
+      )
+    )
+
+    leGraph.lines.partial.i[[i]] <- zeLines
+    leGraph.points.partial.i[[i]] <- zePoints
+    leGraph.names.partial.i[[i]] <- zeLabels
+
+    zePoints <- ggplot2::geom_point(
+      data = pFSi,
+      color = colors4Blocks,
+      alpha = alpha.points,
+      shape = shape.points,
+      size = size.points
+    )
+
+    zeLabels <- ggrepel::geom_text_repel(
+      data = pFSi,
+      color = colors4Blocks,
+      label = names4Partial,
+      alpha = alpha.labels,
+      size = size.labels,
+      fontface = font.labels,
+      family = family.labels,
+      force = 3,
+      segment.size = 0,
+      max.overlaps = 50
+    )
+
+    zeLines <- suppressWarnings(
+      ggplot2::annotate(
+        "segment",
+        x = fS[i, 1],
+        y = fS[i, 2],
+        xend = pFS[i, 1, ],
+        yend = pFS[i, 2, ],
+        color = colors4Blocks,
+        alpha = alpha.lines,
+        size = size.lines,
+        linetype = type.lines,
+        arrow = grid::arrow(length = grid::unit(arrow.length, "cm"))
+      )
+    )
+
+    leGraph.lines.partial.b[[i]] <- zeLines
+    leGraph.points.partial.b[[i]] <- zePoints
+    leGraph.names.partial.b[[i]] <- zeLabels
+  }
+
+  return(structure(
+    list(
+      mapColByItems = list(
+        leGraph.lines.partial.i,
+        leGraph.points.partial.i,
+        leGraph.names.partial.i
+      ),
+      mapColByBlocks = list(
+        leGraph.lines.partial.b,
+        leGraph.points.partial.b,
+        leGraph.names.partial.b
+      ),
+      linesColByItems = leGraph.lines.partial.i,
+      pointsColByItems = leGraph.points.partial.i,
+      labelsColByItems = leGraph.names.partial.i,
+      linesColByBlocks = leGraph.lines.partial.b,
+      pointsColByBlocks = leGraph.points.partial.b,
+      labelsColByBlocks = leGraph.names.partial.b
+    ),
+    class = "map4pfs"
+  ))
+}
