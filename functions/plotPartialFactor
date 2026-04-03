@@ -1,0 +1,142 @@
+# ============================================================
+# Function: plotPartialFactor
+# Purpose: Plot partial factor scores with compromise points,
+#          colored either by datasets (blocks) or SAM items.
+# Notes:
+#   - Requires myCreateFactorMap() and
+#     myCreatePartialFactorScoresMap() to be sourced first
+# ============================================================
+
+plotPartialFactor <- function(
+  Fj,
+  Fi = NULL,
+  partialF,
+  lambda = NULL,
+  tau = NULL,
+  x = 1,
+  y = 2,
+  title.datasets = NULL,
+  subtitle.datasets = NULL,
+  title.items = NULL,
+  subtitle.items = NULL,
+  names4Partials = dimnames(partialF)[[3]],
+  color4Blocks = NULL,
+  color4Items = NULL,
+  cex.point = 3,
+  cex.text = 4,
+  points.color,
+  title.color = "black",
+  subtitle.color = "black",
+  labels.color = "black",
+  axes.color = "black",
+  points.alpha = 0.3,
+  labels.alpha = 1,
+  axes.alpha = 0.6,
+  title.size = 10,
+  subtitle.size = 8,
+  title.alignment = 0,
+  subtitle.alignment = 0,
+  display.labels = TRUE,
+  minx = NULL,
+  maxx = NULL,
+  miny = NULL,
+  maxy = NULL
+) {
+  if (!is.null(Fi)) {
+    factor <- Fi
+  } else {
+    factor <- Fj
+  }
+
+  if (!is.null(lambda)) {
+    map_labels <- createxyLabels.gen(
+      x_axis = x,
+      y_axis = y,
+      lambda = lambda,
+      tau = tau,
+      axisName = "Component "
+    )
+  } else {
+    map_labels <- NULL
+  }
+
+  map <- myCreateFactorMap(
+    factor,
+    axis1 = x,
+    axis2 = y,
+    display.labels = display.labels,
+    col.points = points.color,
+    col.labels = points.color,
+    alpha.points = points.alpha,
+    alpha.labels = labels.alpha,
+    alpha.axes = axes.alpha,
+    col.background = NULL,
+    col.axes = axes.color,
+    cex = cex.point,
+    text.cex = cex.text,
+    pch = 19,
+    segment.size = 0.4,
+    constraints = list(
+      minx = minx,
+      maxx = maxx,
+      miny = miny,
+      maxy = maxy
+    )
+  )
+
+  map4PFS <- myCreatePartialFactorScoresMap(
+    factorScores = factor,
+    partialFactorScores = partialF,
+    axis1 = x,
+    axis2 = y,
+    colors4Items = as.vector(color4Items),
+    colors4Blocks = as.vector(color4Blocks),
+    names4Partial = names4Partials,
+    size.lines = 0.5,
+    font.labels = "bold"
+  )
+
+  partialFS.map.byDatasets <- map$zeMap +
+    map4PFS$mapColByBlocks +
+    map_labels +
+    ggplot2::labs(title = title.datasets, subtitle = subtitle.datasets) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(
+        face = "bold",
+        size = title.size,
+        color = "darkslategrey",
+        hjust = 0
+      ),
+      plot.subtitle = ggplot2::element_text(
+        size = subtitle.size,
+        face = "bold",
+        color = "darkslategrey",
+        hjust = 0
+      ),
+      axis.title.x = ggplot2::element_text(colour = "darkslategrey"),
+      axis.title.y = ggplot2::element_text(colour = "darkslategrey")
+    )
+
+  partialFS.map.bySAM <- map$zeMap +
+    map4PFS$mapColByItems +
+    map_labels +
+    ggplot2::labs(title = title.items, subtitle = subtitle.items) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(
+        face = "bold",
+        size = title.size,
+        color = title.color,
+        hjust = title.alignment
+      ),
+      plot.subtitle = ggplot2::element_text(
+        size = subtitle.size,
+        face = "bold",
+        color = subtitle.color,
+        hjust = subtitle.alignment
+      ),
+      axis.title.x = ggplot2::element_text(colour = labels.color),
+      axis.title.y = ggplot2::element_text(colour = labels.color)
+    )
+
+  return(list(partialFS.map.byDatasets, partialFS.map.bySAM))
+}
