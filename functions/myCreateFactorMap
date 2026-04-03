@@ -1,0 +1,171 @@
+# ============================================================
+# Function: myCreateFactorMap
+# Purpose: Build a factor map with points and optional labels.
+# Notes:
+#   - Includes helper function myMap4DotsAndLabels()
+#   - Requires prettyGraphs, ggplot2, and ggrepel
+# ============================================================
+
+# ------------------------------------------------------------
+# Helper used by myCreateFactorMap()
+# ------------------------------------------------------------
+myMap4DotsAndLabels <- function(
+  data,
+  axis1 = 1,
+  axis2 = 2,
+  display.points = TRUE,
+  col.points = "blueviolet",
+  alpha.points = 0.5,
+  pch = 19,
+  cex = 2.5,
+  display.labels = TRUE,
+  col.labels = "darkorchid4",
+  alpha.labels = 1,
+  force = 1,
+  segment.size = 0.5,
+  text.cex = 4,
+  font.face = "bold",
+  font.family = "sans",
+  nudge_x = 0,
+  nudge_y = 0,
+  ...
+) {
+  data <- as.data.frame(data)
+
+  V1 <- as.name(colnames(data)[1])
+  V2 <- as.name(colnames(data)[2])
+
+  LeG_dot <- NULL
+  if (display.points) {
+    LeG_dot <- ggplot2::geom_point(
+      data = data,
+      ggplot2::aes_string(V1, V2),
+      shape = pch,
+      size = cex,
+      color = col.points,
+      alpha = alpha.points
+    )
+  }
+
+  LeG_text <- NULL
+  if (display.labels) {
+    LeG_text <- ggrepel::geom_text_repel(
+      label = rownames(data),
+      data = data,
+      ggplot2::aes_string(V1, V2),
+      segment.size = segment.size,
+      size = text.cex,
+      fontface = font.face,
+      family = font.family,
+      color = col.labels,
+      alpha = alpha.labels,
+      nudge_x = nudge_x,
+      nudge_y = nudge_y,
+      max.overlaps = 100
+    )
+  }
+
+  return(list(leG.points = LeG_dot, leG.labels = LeG_text))
+}
+
+# ------------------------------------------------------------
+# Main function
+# ------------------------------------------------------------
+myCreateFactorMap <- function(
+  X,
+  axis1 = 1,
+  axis2 = 2,
+  constraints = NULL,
+  title = NULL,
+  col.points = "blueviolet",
+  alpha.points = 0.5,
+  display.points = TRUE,
+  pch = 19,
+  cex = 2.5,
+  display.labels = TRUE,
+  col.labels = "darkorchid4",
+  alpha.labels = 1,
+  text.cex = 4,
+  font.face = "bold",
+  font.family = "sans",
+  col.axes = "darkorchid",
+  alpha.axes = 0.2,
+  width.axes = 1.1,
+  constraints.factor = 1.1,
+  col.background = adjustcolor("lavender", alpha.f = 0.2),
+  force = 1,
+  segment.size = 0.5,
+  ...
+) {
+  if (is.null(title)) {
+    title <- ""
+  }
+
+  if (is.null(colnames(X))) {
+    colnames(X) <- paste0("Component ", seq_len(ncol(X)))
+  }
+
+  G <- as.data.frame(X)
+
+  if (is.null(constraints)) {
+    constraints <- lapply(
+      prettyGraphs::minmaxHelper(G[, c(axis1, axis2)]),
+      "*",
+      constraints.factor
+    )
+  }
+
+  LeG_b <- createBaseMap(
+    data = G[, c(axis1, axis2)],
+    constraints = constraints,
+    col.axes = col.axes,
+    alpha.axes = alpha.axes,
+    width.axes = width.axes,
+    col.background = col.background,
+    title = title
+  )
+
+  LesG_dl <- myMap4DotsAndLabels(
+    data = G[, c(axis1, axis2)],
+    axis1 = 1,
+    axis2 = 2,
+    display.points = display.points,
+    col.points = col.points,
+    alpha.points = alpha.points,
+    pch = pch,
+    cex = cex,
+    display.labels = display.labels,
+    col.labels = col.labels,
+    alpha.labels = alpha.labels,
+    text.cex = text.cex,
+    font.face = font.face,
+    font.family = font.family,
+    force = force,
+    segment.size = segment.size,
+    nudge_x = 0,
+    nudge_y = 0,
+    ...
+  )
+
+  LeG <- LeG_b
+
+  if (display.points) {
+    LeG <- LeG + LesG_dl$leG.points
+  }
+
+  if (display.labels) {
+    LeG <- LeG + LesG_dl$leG.labels
+  }
+
+  return(structure(
+    list(
+      zeMap = LeG,
+      zeMap_background = LeG_b,
+      zeMap_dots = LesG_dl$leG.points,
+      zeMap_text = LesG_dl$leG.labels,
+      factorScores = G,
+      constraints = constraints
+    ),
+    class = "createFactorMap"
+  ))
+}
