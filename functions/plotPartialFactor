@@ -1,6 +1,6 @@
 # ============================================================
 # Function: plotPartialFactor
-# Purpose: Plot partial factor scores with compromise points,
+# Purpose: Plot row or column partial factor scores with compromise points,
 #          colored either by datasets (blocks) or SAM items.
 # Notes:
 #   - Requires myCreateFactorMap() and
@@ -104,17 +104,17 @@ plotPartialFactor <- function(
       plot.title = ggplot2::element_text(
         face = "bold",
         size = title.size,
-        color = "darkslategrey",
+        color = title.color,
         hjust = 0
       ),
       plot.subtitle = ggplot2::element_text(
         size = subtitle.size,
         face = "bold",
-        color = "darkslategrey",
+        color = subtitle.color,
         hjust = 0
       ),
-      axis.title.x = ggplot2::element_text(colour = "darkslategrey"),
-      axis.title.y = ggplot2::element_text(colour = "darkslategrey")
+      axis.title.x = ggplot2::element_text(color = labels.color),
+      axis.title.y = ggplot2::element_text(color = labels.color)
     )
 
   partialFS.map.bySAM <- map$zeMap +
@@ -134,8 +134,8 @@ plotPartialFactor <- function(
         color = subtitle.color,
         hjust = subtitle.alignment
       ),
-      axis.title.x = ggplot2::element_text(colour = labels.color),
-      axis.title.y = ggplot2::element_text(colour = labels.color)
+      axis.title.x = ggplot2::element_text(color = labels.color),
+      axis.title.y = ggplot2::element_text(color = labels.color)
     )
 
   return(list(partialFS.map.byDatasets, partialFS.map.bySAM))
