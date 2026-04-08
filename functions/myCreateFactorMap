@@ -1,5 +1,6 @@
 # ============================================================
 # Function: myCreateFactorMap
+# Modified version of createFactorMap (written by Hervé Abdi)
 # Purpose: Build a factor map with points and optional labels.
 # Notes:
 #   - Includes helper function myMap4DotsAndLabels()
