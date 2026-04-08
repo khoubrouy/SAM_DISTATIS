@@ -1,5 +1,6 @@
 # ============================================================
 # Function: myCreatePartialFactorScoresMap
+# Modified version of createPartialFactorMap (written by Hervé Abdi)
 # Purpose: Create graphical layers for partial factor scores,
 #          colored either by items or by blocks.
 # Notes:
