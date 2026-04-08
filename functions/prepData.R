@@ -8,13 +8,13 @@
 prepData <- function(data, center = TRUE, scale = FALSE, norm = TRUE) {
   data <- as.matrix(data)
 
-  data_prep <- scale(data, center = center, scale = scale)
+  dataPreProc <- scale(data, center = center, scale = scale)
 
   if (norm) {
-    data_prep <- data_prep / sqrt(nrow(data_prep))
+    dataPreProc <- dataPreProc / sqrt(nrow(dataPreProc))
   }
 
-  dataTdata <- t(data_prep) %*% data_prep
+  dataTdata <- t(dataPreProc) %*% dataPreProc
 
   return(dataTdata)
 }
