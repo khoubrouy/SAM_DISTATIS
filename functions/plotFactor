@@ -1,6 +1,6 @@
 # ============================================================
 # Function: plotFactor
-# Purpose: Plot factor scores or loadings on a selected pair
+# Purpose: Plot row or column scores on a selected pair
 #          of components using the custom factor map builder.
 # Notes:
 #   - Requires myCreateFactorMap() to be sourced first
@@ -93,8 +93,8 @@ plotFactor <- function(
         color = subtitle.color,
         hjust = subtitle.alignment
       ),
-      axis.title.x = ggplot2::element_text(colour = labels.color, size = axis.label.size),
-      axis.title.y = ggplot2::element_text(colour = labels.color, size = axis.label.size)
+      axis.title.x = ggplot2::element_text(color = labels.color, size = axis.label.size),
+      axis.title.y = ggplot2::element_text(color = labels.color, size = axis.label.size)
     )
 
   return(list(aggmap, map$constraints))
