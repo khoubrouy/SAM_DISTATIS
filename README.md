@@ -33,30 +33,7 @@ git clone https://github.com/khoubrouy/SAM_DISTATIS.git
 
 ### 2. Install required packages
 
-In R:
-
-```r
-required_packages <- c(
-  "prettyGraphs", "DistatisR", "gplots", "ggrepel",
-  "ggplot2", "corrplot", "gridExtra", "ggplotify", "grid", "rgl"
-)
-
-for (pkg in required_packages) {
-  if (!require(pkg, character.only = TRUE)) {
-    install.packages(pkg)
-    library(pkg, character.only = TRUE)
-  }
-}
-
-# Install non-CRAN packages
-if (!require("remotes")) install.packages("remotes")
-
-remotes::install_github("HerveAbdi/data4PCCAR")
-remotes::install_github("HerveAbdi/PTCA4CATA")
-
-library(data4PCCAR)
-library(PTCA4CATA)
-```
+All the required packages will be automatically installed when the Quarto files in Section 3 are run.
 
 ### 3. Run the analysis
 
