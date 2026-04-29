@@ -1,3 +1,9 @@
+# ============================================================
+# Function: runMeFirst
+# Purpose: Installing all the required packages if they have not been installed.
+# ============================================================
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 if (!require("remotes")) install.packages("remotes")
 
 required_packages <- c(
