@@ -37,9 +37,8 @@ In R:
 
 ```r
 required_packages <- c(
-  "prettyGraphs", "PTCA4CATA", "data4PCCAR", "DistatisR",
-  "gplots", "ggrepel", "ggplot2", "corrplot",
-  "gridExtra", "ggplotify", "grid", "rgl"
+  "prettyGraphs", "DistatisR", "gplots", "ggrepel",
+  "ggplot2", "corrplot", "gridExtra", "ggplotify", "grid", "rgl"
 )
 
 for (pkg in required_packages) {
@@ -48,6 +47,15 @@ for (pkg in required_packages) {
     library(pkg, character.only = TRUE)
   }
 }
+
+# Install non-CRAN packages
+if (!require("remotes")) install.packages("remotes")
+
+remotes::install_github("HerveAbdi/data4PCCAR")
+remotes::install_github("HerveAbdi/PTCA4CATA")
+
+library(data4PCCAR)
+library(PTCA4CATA)
 ```
 
 ### 3. Run the analysis
